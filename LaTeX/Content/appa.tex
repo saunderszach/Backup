@@ -1,0 +1,56 @@
+Here we provide recommendations for the tuning of penalty parameters $\theta$ and $\phi$. We begin with an explanation grounded in logic. It can be shown that as the false alarm rate $\lambda$ increases, the number of expected false alarms also increases. Therefore, it stands to reason that as a general rule of thumb the false alarm penalty $\theta$ should decrease as $\lambda$ increases. Similarly, the number of expected missed detections increases as the missed detection probability $\gamma$ increases, and so too the missed detection penalty $\phi$ should decrease. Furthermore, it stands to reason that the value of both of these penalties should somehow be tied to the value of $\sigma$, since in the objective function \eqref{eq: general_objective} there is a trade-off between the estimation error, which is tied to $\sigma$, and the penalties. Therefore, in order to balance this tradeoff, we should consider increasing both penalties as $\sigma$ increases. 
+
+We also note that while in objective function \eqref{eq: general_objective} the total estimation error (the first term), as well as the number of missed detections (the third term) are proportional to the number of targets, the number of false alarms is independent of the number of targets. Since the number of target is unknown we can not tune the penalties to suit this number, and instead suggest that in order to balance the objective function terms we normalize $\theta$ for the number of targets the MIO is currently estimating. Towards this goal, we tune $\theta$ for scenarios with eight targets and use the following linear dependence to update $\theta(P_{\text{est}})$ for the estimated number of targets $P_{\text{est}}$:
+$$\theta(P_{\text{est}})=\frac{P_{\text{est}}}{8}\theta.$$
+
+Additionally, we empirically observed that the missed detection penalty $\phi$ benefits from tuning for the missed detection probability $\gamma$, the false alarm rate $\lambda$ and the detection error $\sigma$, while the false alarm penalty $\theta$  benefits from tuning for $\lambda$ and $\sigma$, but gains no added benefit from tuning for $\gamma$. %This may be explained by the fact that while the false alarm process is independent of the trajectory detection process, in the sense that it is not effected by a change in the number of trajectories, and so it only needs to balance the estimation errors which are proportional to $\sigma$, while deciding on whether to allow a missed detection is dependent on whether classifying a detection as a false alarm is plausible.
+
+Through examination and experimentation we found these conclusions to generally hold true across a variety of scenario sizes and difficulties. Using the insight gained from these results, we tuned both penalties for the full scale experiment with detection ambiguity outlined in \mysection~\ref{\myabrv Results}. The false alarm penalties for the eight target scenarios in the robust experiment are shown in Table~\ref{tab:Theta_Penalties} and the missed detection penalties are shown in Table~\ref{tab:Phi_Penalties}.
+\begin{table}[ht]
+\centering
+\begin{tabular}{c|m{1cm}m{1cm}m{1cm}m{1cm}}
+  \hline
+   & \multicolumn{4}{c}{$\sigma$} \\
+   \cline{2-5}
+   $\lambda$ & 0.1 & 0.5 & 1.0 & 2.0\\
+  \hline
+  \hline
+   0.1 & 1.7 & 2.6 & 3.1 & 3.5 \\
+   0.5 & 1.1 & 1.9 & 2.3 & 2.5 \\ 
+   1.0 & 0.9 & 1.2 & 1.6 & 1.8 \\ 
+   2.0 & 0.5 & 0.9 & 0.9 & 1.0 \\ 
+   \hline
+\end{tabular}
+\caption{False alarm penalties ($\theta$) as a function of $\lambda$ and $\sigma$.}
+\label{tab:Theta_Penalties}
+\end{table}
+\begin{table}[ht]
+\centering
+\begin{tabular}{cc|cccc}
+  \hline
+  & & \multicolumn{4}{c}{$\sigma$} \\
+  \cline{3-6}
+ $\lambda$ & $\gamma$ & 0.1 & 0.5 & 1 & 2 \\ 
+  \hline
+  \hline
+   0.10 & 0.05 & 0.20 & 0.50 & 0.80 & 0.70 \\ 
+   0.10 & 0.10 & 0.10 & 0.30 & 0.50 & 0.50 \\ 
+   0.10 & 0.15 & 0.10 & 0.20 & 0.40 & 0.40 \\ 
+   0.10 & 0.20 & 0.10 & 0.10 & 0.30 & 0.40 \\ 
+   0.50 & 0.05 & 0.20 & 0.50 & 0.80 & 0.80 \\ 
+   0.50 & 0.10 & 0.20 & 0.30 & 0.50 & 0.60 \\ 
+   0.50 & 0.15 & 0.20 & 0.25 & 0.40 & 0.40 \\ 
+   0.50 & 0.20 & 0.10 & 0.20 & 0.30 & 0.40 \\ 
+   1.00 & 0.05 & 0.30 & 0.70 & 0.80 & 0.80 \\ 
+   1.00 & 0.10 & 0.20 & 0.40 & 0.50 & 0.60 \\ 
+   1.00 & 0.15 & 0.20 & 0.25 & 0.40 & 0.40 \\ 
+   1.00 & 0.20 & 0.10 & 0.20 & 0.30 & 0.40 \\ 
+   2.00 & 0.05 & 0.30 & 0.70 & 0.90 & 1.00 \\ 
+   2.00 & 0.10 & 0.20 & 0.50 & 0.60 & 0.60 \\ 
+   2.00 & 0.15 & 0.20 & 0.25 & 0.40 & 0.50 \\ 
+   2.00 & 0.20 & 0.10 & 0.20 & 0.30 & 0.40 \\ 
+   \hline
+\end{tabular}
+\caption{Missed detection penalties ($\phi$) as a function of $\lambda$, $\gamma$, and $\sigma$.}
+\label{tab:Phi_Penalties}
+\end{table}
